@@ -57,7 +57,7 @@ export default class connectingScreen extends Component {
     try {
       if (state === 'background') {
         console.log('background');
-        /*var feedbackData = JSON.parse(
+        var feedbackData = JSON.parse(
           await AsyncStorage.getItem('feedbackData'),
         );
         if (feedbackData === null) {
@@ -65,15 +65,15 @@ export default class connectingScreen extends Component {
         } else {
           this.intervalId = BackgroundTimer.setInterval(async () => {
             await this.sendFeedbackData(feedbackData);
-          }, 5000);
+          }, 300000);
           this.setState({isbackgroundTimerOn: true});
-        }*/
+        }
       } else if (state === 'active') {
         console.log('active');
-        /*if (this.state.isbackgroundTimerOn === true) {
+        if (this.state.isbackgroundTimerOn === true) {
           BackgroundTimer.clearInterval(this.intervalId);
           this.setState({isbackgroundTimerOn: false});
-        }*/
+        }
       }
     } catch (error) {
       console.log('background error', error);
