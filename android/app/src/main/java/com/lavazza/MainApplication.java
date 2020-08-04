@@ -4,10 +4,8 @@ import android.app.Application;
 import android.content.Context;
 import com.facebook.react.PackageList;
 import com.facebook.react.ReactApplication;
-import com.localz.PinchPackage;
-import com.criticalblue.reactnative.CertPinnerPackage;
-import com.toyberman.RNSslPinningPackage;
-import com.toyberman.RNSslPinningPackage;
+import com.reactnativecommunity.picker.RNCPickerPackage;
+import com.reactnativecommunity.picker.RNCPickerPackage;
 import org.reactnative.maskedview.RNCMaskedViewPackage;
 import com.th3rdwave.safeareacontext.SafeAreaContextPackage;
 import com.swmansion.rnscreens.RNScreensPackage;
@@ -49,26 +47,7 @@ public class MainApplication extends Application implements ReactApplication {
           return packages;
         }
 
-        // @Override
-        // protected List<ReactPackage> getPackages() {
-        // return Arrays.asList(
-        //     new MainReactPackage(),
-            //new PinchPackage(),
-            //new CertPinnerPackage(),
-            
-            //new RNSslPinningPackage(),
-            //new RNCMaskedViewPackage(),
-            //new SafeAreaContextPackage(),
-            //new RNScreensPackage(),
-            //new ReanimatedPackage(),
-            //new RNGestureHandlerPackage(),
-            //new BackgroundTimerPackage(),
-            //new AsyncStoragePackage(),
-            //new NetInfoPackage(),
-            // new RNWifiPackage();
-        //     new HotspotPackage()
-        // );
-        // }
+        
         @Override
         protected String getJSMainModuleName() {
           return "index";

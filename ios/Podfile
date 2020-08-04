@@ -97,7 +97,8 @@ target 'lavazza' do
 
   pod 'RNSslPinning', :path => '../node_modules/react-native-ssl-pinning'
 
-  pod 'CertPinner', :path => '../node_modules/react-native-cert-pinner'
+
+  pod 'RNCPicker', :path => '../node_modules/@react-native-community/picker'
 
   target 'lavazzaTests' do
     inherit! :complete
