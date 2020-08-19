@@ -659,7 +659,6 @@ const styles = StyleSheet.create({
     fontSize: responsiveScreenFontSize(1.3),
   },
   orderStatusTextStyle: {
-    marginTop: 5,
     color: '#100A45',
     fontSize: responsiveScreenFontSize(1.5),
   },
