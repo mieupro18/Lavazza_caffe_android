@@ -244,7 +244,7 @@ const styles = StyleSheet.create({
   loadingActivityTextStyle: {
     color: '#100A45',
     fontWeight: 'bold',
-    fontSize: responsiveScreenFontSize(2),
+    fontSize: responsiveScreenFontSize(1.8),
   },
   connectButtonContainer: {
     alignItems: 'center',
@@ -260,6 +260,6 @@ const styles = StyleSheet.create({
   },
   connectButtonTextStyle: {
     color: 'white',
-    fontSize: responsiveScreenFontSize(2),
+    fontSize: responsiveScreenFontSize(1.5),
   },
 });
