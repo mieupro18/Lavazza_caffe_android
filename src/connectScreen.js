@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-community/async-storage';
+import TestWifiModule from './TestWifiModule';
 import BackgroundTimer from 'react-native-background-timer';
 import {
   responsiveScreenHeight,
@@ -113,40 +114,44 @@ export default class connectScreen extends Component {
   };
 
   onConnect = async () => {
-    this.setState({isLoading: true});
-    console.log('get Product Info');
-    console.log(HTTPS, PORT, IPADDRESS);
-    fetch(HTTPS + '://' + IPADDRESS + ':' + PORT + '/productInfo', {
-      headers: {
-        tokenId: 'secret',
-      },
-      signal: (await getTimeoutSignal(5000)).signal,
-    })
-      .then(response => response.json())
-      .then(async resultData => {
-        console.log(resultData);
-        if (resultData.status === 'Success') {
-          this.props.navigation.navigate('dispenseScreen', {
-            productList: resultData.data,
-            machineName: resultData.machineName,
-            machineId: resultData.machineId,
-          });
-        } else {
-          Alert.alert('', 'Something Went Wrong...Please reconnect', [
-            {text: 'Ok'},
-          ]);
-        }
-        this.setState({isLoading: false});
+    if (await TestWifiModule.isWifiTurnedOn()) {
+      this.setState({isLoading: true});
+      console.log('get Product Info');
+      console.log(HTTPS, PORT, IPADDRESS);
+      fetch(HTTPS + '://' + IPADDRESS + ':' + PORT + '/productInfo', {
+        headers: {
+          tokenId: 'secret',
+        },
+        signal: (await getTimeoutSignal(5000)).signal,
       })
-      .catch(async e => {
-        Alert.alert(
-          '',
-          'Please check your connection with the lavazza caffè machine',
-          [{text: 'ok'}],
-        );
-        console.log(e);
-        this.setState({isLoading: false});
-      });
+        .then(response => response.json())
+        .then(async resultData => {
+          console.log(resultData);
+          if (resultData.status === 'Success') {
+            this.props.navigation.navigate('dispenseScreen', {
+              productList: resultData.data,
+              machineName: resultData.machineName,
+              machineId: resultData.machineId,
+            });
+          } else {
+            Alert.alert('', 'Something Went Wrong...Please reconnect', [
+              {text: 'Ok'},
+            ]);
+          }
+          this.setState({isLoading: false});
+        })
+        .catch(async e => {
+          Alert.alert(
+            '',
+            'Please check your connection with the lavazza caffè machine',
+            [{text: 'ok'}],
+          );
+          console.log(e);
+          this.setState({isLoading: false});
+        });
+    } else {
+      Alert.alert('', 'Please turn on the Wi-Fi', [{text: 'ok'}]);
+    }
   };
 
   render() {
