@@ -12,13 +12,21 @@ import dispenseScreen from './src/dispenseScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 import connectScreen from './src/connectScreen';
+import splashScreen from './src/splashScreen';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="connectScreen" headerMode="none">
+      <Stack.Navigator initialRouteName="splashScreen" headerMode="none">
+        <Stack.Screen
+          name="splashScreen"
+          component={splashScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
         <Stack.Screen
           name="connectScreen"
           component={connectScreen}
