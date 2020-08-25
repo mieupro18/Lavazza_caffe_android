@@ -19,7 +19,7 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 //import com.lavazza.CertificatePinningClientFactory;
-import com.lavazza.CustomToastPackage;
+//import com.lavazza.CustomToastPackage;
 //import com.facebook.react.modules.network.OkHttpClientProvider;
 
 // import com.reactlibrary.RNWifiPackage;
@@ -42,7 +42,7 @@ public class MainApplication extends Application implements ReactApplication {
           List<ReactPackage> packages = new PackageList(this).getPackages();
           // Packages that cannot be autolinked yet can be added manually here, for example:
           // packages.add(new MyReactNativePackage());
-          packages.add(new CustomToastPackage());
+          //packages.add(new CustomToastPackage());
           
           return packages;
         }
