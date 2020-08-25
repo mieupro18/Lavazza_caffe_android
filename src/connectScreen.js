@@ -188,17 +188,6 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#ffffff',
   },
-  splashScreenLogoContainer: {
-    flex: 1,
-    height: responsiveScreenHeight(20),
-    justifyContent: 'center',
-    alignItems: 'center',
-  },
-  splashScreenLogo: {
-    width: responsiveScreenWidth(50),
-    height: '100%',
-    resizeMode: 'contain',
-  },
   centeredViewContainer: {
     flex: 1,
     justifyContent: 'center',
