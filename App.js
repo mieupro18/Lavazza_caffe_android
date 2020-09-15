@@ -5,31 +5,38 @@
  * @format
  * @flow strict-local
  */
-
 import 'react-native-gesture-handler';
-import React, {Component} from 'react';
+import React from 'react';
 
-import ProductList from './src/productList';
+import DispenseScreen from './src/dispenseScreen';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
-import connectingScreen from './src/connectingScreen';
+import ConnectScreen from './src/connectScreen';
+import SplashScreen from './src/splashScreen';
 
 const Stack = createStackNavigator();
 
 const App = () => {
   return (
     <NavigationContainer>
-      <Stack.Navigator initialRouteName="connectingScreen" headerMode="none">
+      <Stack.Navigator initialRouteName="splashScreen" headerMode="none">
         <Stack.Screen
-          name="connectingScreen"
-          component={connectingScreen}
+          name="splashScreen"
+          component={SplashScreen}
           options={{
             headerShown: false,
           }}
         />
         <Stack.Screen
-          name="productList"
-          component={ProductList}
+          name="connectScreen"
+          component={ConnectScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="dispenseScreen"
+          component={DispenseScreen}
           options={{
             headerShown: false,
           }}
