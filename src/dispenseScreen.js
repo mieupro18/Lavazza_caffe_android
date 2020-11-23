@@ -12,8 +12,8 @@ import {
 } from 'react-native';
 import {Card, CardItem} from 'native-base';
 import AsyncStorage from '@react-native-community/async-storage';
-import StarRating from 'react-native-star-rating';
 import BackgroundTimer from 'react-native-background-timer';
+import StarRating from 'react-native-star-rating';
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import MaterialIcons from 'react-native-vector-icons/MaterialIcons';
 import {
@@ -498,10 +498,26 @@ export default class DispenseScreen extends Component {
     return (
       <SafeAreaView style={styles.mainContainer}>
         <View style={styles.headerContainer}>
-          <Image
-            style={styles.logoStyleInHeader}
-            source={require('../assets/Lavazza-White-Logo-No-Background.png')}
-          />
+          <TouchableOpacity
+            onPress={() => {
+              Alert.alert(
+                'Machine Info',
+                'Machine Id : ' +
+                  this.state.machineId +
+                  '\nMachine Name : ' +
+                  this.state.machineName,
+                [
+                  {
+                    text: 'Done',
+                  },
+                ],
+              );
+            }}>
+            <Image
+              style={styles.logoStyleInHeader}
+              source={require('../assets/Lavazza-White-Logo-No-Background.png')}
+            />
+          </TouchableOpacity>
         </View>
         <ScrollView>
           {this.state.deviceProductList.map((product, index) => {
@@ -587,10 +603,12 @@ export default class DispenseScreen extends Component {
                 </View>
                 {this.state.orderStatusCode === DISPENSING ? (
                   <View style={styles.modalItemContainer}>
-                    <ProgressiveImage
-                      style={styles.dispensingGifStyleInModal}
-                      source={require('../assets/dispensing.gif')}
-                    />
+                    <View style={styles.dispensingGifContainer}>
+                      <ProgressiveImage
+                        style={styles.dispensingGifStyleInModal}
+                        source={require('../assets/dispensing.gif')}
+                      />
+                    </View>
                   </View>
                 ) : (
                   <View>
@@ -859,6 +877,10 @@ const styles = StyleSheet.create({
     width: responsiveScreenWidth(25),
     height: responsiveScreenHeight(4),
     resizeMode: 'contain',
+  },
+  dispensingGifContainer: {
+    borderRadius: responsiveScreenWidth(25),
+    overflow: 'hidden',
   },
   dispensingGifStyleInModal: {
     width: responsiveScreenWidth(40),
