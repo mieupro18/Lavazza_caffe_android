@@ -52,6 +52,8 @@ import ProgressiveImage from './progressiveImage';
 MaterialCommunityIcons.loadFont();
 MaterialIcons.loadFont();
 
+const finalPairOrderPosition = 2;
+
 export default class DispenseScreen extends Component {
   constructor(props) {
     super(props);
@@ -75,6 +77,7 @@ export default class DispenseScreen extends Component {
       machineName: null,
       machineId: null,
       stopButtonVisible: false,
+      currentDispensingPairOrderPosition: 0,
     };
   }
 
@@ -151,6 +154,7 @@ export default class DispenseScreen extends Component {
       pairProductName: null,
       pairProductImage: null,
       stopButtonVisible: false,
+      currentDispensingPairOrderPosition: 0,
     });
   };
 
@@ -228,6 +232,7 @@ export default class DispenseScreen extends Component {
                 orderStatusCode: ORDER_DISPENSED,
                 orderId: null,
                 stopButtonVisible: false,
+                currentDispensingPairOrderPosition: 0,
               });
             }
           } else {
@@ -377,6 +382,12 @@ export default class DispenseScreen extends Component {
           this.setState({orderStatusCode: DISPENSING});
           console.log('Dispense Starts');
           this.startPollForOrderStatus(productName);
+          if (this.state.pairOrderFlag) {
+            this.setState({
+              currentDispensingPairOrderPosition:
+                this.state.currentDispensingPairOrderPosition + 1,
+            });
+          }
           if (resultData.stopDispense) {
             this.setState({stopButtonVisible: true});
           }
@@ -418,7 +429,11 @@ export default class DispenseScreen extends Component {
       .then(async resultData => {
         console.log(resultData);
         if (resultData.status === SUCCESS) {
-          if (this.state.pairOrderFlag === false) {
+          if (
+            this.state.pairOrderFlag === false ||
+            this.state.currentDispensingPairOrderPosition ===
+              finalPairOrderPosition
+          ) {
             this.stopPollForOrderStatus();
             console.log('Dispense Stopped');
             if (await this.checkForFeedbackVisibility(productName)) {
