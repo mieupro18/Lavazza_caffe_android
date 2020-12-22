@@ -20,7 +20,6 @@ import {
 
 import {
   LAVAZZA_SERVER_ENDPOINT,
-  PI_SERVER_ENDPOINT,
   INTERVAL_BETWEEN_SENDING_FEEDBACK_DATA,
   TOKEN,
   SUCCESS,
@@ -29,6 +28,7 @@ import getTimeoutSignal from './commonApis';
 
 var retry_attempt = 0;
 const max_retry_attempt = 6;
+var PI_SERVER_ENDPOINT = null;
 
 export default class ConnectScreen extends Component {
   constructor(props) {
@@ -39,6 +39,9 @@ export default class ConnectScreen extends Component {
   }
 
   async componentDidMount() {
+    PI_SERVER_ENDPOINT =
+      'http://' + this.props.route.params.ipAddress + ':9876';
+    console.log(PI_SERVER_ENDPOINT);
     AppState.addEventListener('change', this.handleAppStateChange);
   }
 
@@ -127,6 +130,7 @@ export default class ConnectScreen extends Component {
             productList: resultData.data,
             machineName: resultData.machineName,
             machineId: resultData.machineId,
+            PI_SERVER_ENDPOINT: PI_SERVER_ENDPOINT,
           });
         } else {
           Alert.alert('', 'Something Went Wrong...Please reconnect', [

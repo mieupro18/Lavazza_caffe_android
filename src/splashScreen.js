@@ -13,7 +13,7 @@ export default class SplashScreen extends Component {
 
   async componentDidMount() {
     setTimeout(async () => {
-      this.props.navigation.replace('connectScreen');
+      this.props.navigation.replace('SearchDevicesScreen');
     }, SPLASHSCREEN_VISIBLE_TIME);
   }
 

@@ -44,7 +44,6 @@ import {
   productList,
   TOKEN,
   SUCCESS,
-  PI_SERVER_ENDPOINT,
 } from './macros';
 import getTimeoutSignal from './commonApis';
 import ProgressiveImage from './progressiveImage';
@@ -53,6 +52,7 @@ MaterialCommunityIcons.loadFont();
 MaterialIcons.loadFont();
 
 const finalPairOrderPosition = 2;
+var PI_SERVER_ENDPOINT = null;
 
 export default class DispenseScreen extends Component {
   constructor(props) {
@@ -83,6 +83,8 @@ export default class DispenseScreen extends Component {
 
   async componentDidMount() {
     this.showProductList(this.props.route.params.productList);
+    PI_SERVER_ENDPOINT = this.props.route.params.PI_SERVER_ENDPOINT;
+    console.log(PI_SERVER_ENDPOINT);
   }
 
   async componentWillUnmount() {}

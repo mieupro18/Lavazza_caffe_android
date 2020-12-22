@@ -1,5 +1,5 @@
 // SERVER INFO
-const PI_SERVER_ENDPOINT = 'http://192.168.5.1:9876';
+//const PI_SERVER_ENDPOINT = 'http://192.168.5.1:9876';
 //const PI_SERVER_ENDPOINT = 'http://34.123.104.148:9876';
 const LAVAZZA_SERVER_ENDPOINT = 'https://cfdsfeedback.lavazza.co.in:9876';
 const TOKEN = 'l@vA@zzacfd$';
@@ -210,7 +210,6 @@ const productList = [
 
 export {
   TOKEN,
-  PI_SERVER_ENDPOINT,
   LAVAZZA_SERVER_ENDPOINT,
   BEFORE_PLACING_ORDER,
   PLEASE_WAIT,

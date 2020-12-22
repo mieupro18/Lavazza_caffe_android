@@ -13,7 +13,8 @@ import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 import ConnectScreen from './src/connectScreen';
 import SplashScreen from './src/splashScreen';
-
+import SearchDevicesScreen from './src/searchDevicesScreen';
+import MachineListScreen from './src/machineListScreen';
 const Stack = createStackNavigator();
 
 const App = () => {
@@ -23,6 +24,20 @@ const App = () => {
         <Stack.Screen
           name="splashScreen"
           component={SplashScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="SearchDevicesScreen"
+          component={SearchDevicesScreen}
+          options={{
+            headerShown: false,
+          }}
+        />
+        <Stack.Screen
+          name="machineListScreen"
+          component={MachineListScreen}
           options={{
             headerShown: false,
           }}
