@@ -24,7 +24,7 @@ import {
   TOKEN,
   SUCCESS,
 } from './macros';
-import getTimeoutSignal from './commonApis';
+import {getTimeoutSignal, getMachineList} from './commonApis';
 
 var retry_attempt = 0;
 const max_retry_attempt = 6;
@@ -39,9 +39,9 @@ export default class ConnectScreen extends Component {
   }
 
   async componentDidMount() {
-    PI_SERVER_ENDPOINT =
+    /*PI_SERVER_ENDPOINT =
       'http://' + this.props.route.params.ipAddress + ':9876';
-    console.log(PI_SERVER_ENDPOINT);
+    console.log(PI_SERVER_ENDPOINT);*/
     AppState.addEventListener('change', this.handleAppStateChange);
   }
 
@@ -114,40 +114,20 @@ export default class ConnectScreen extends Component {
   };
 
   onConnect = async () => {
-    this.setState({isLoading: true});
-    console.log('get Product Info');
-    fetch(PI_SERVER_ENDPOINT + '/productInfo', {
-      headers: {
-        tokenId: TOKEN,
-      },
-      signal: (await getTimeoutSignal(5000)).signal,
-    })
-      .then(response => response.json())
-      .then(async resultData => {
-        console.log(resultData);
-        if (resultData.status === SUCCESS) {
-          this.props.navigation.navigate('dispenseScreen', {
-            productList: resultData.data,
-            machineName: resultData.machineName,
-            machineId: resultData.machineId,
-            PI_SERVER_ENDPOINT: PI_SERVER_ENDPOINT,
-          });
-        } else {
-          Alert.alert('', 'Something Went Wrong...Please reconnect', [
-            {text: 'Ok'},
-          ]);
-        }
-        this.setState({isLoading: false});
-      })
-      .catch(async e => {
-        Alert.alert(
-          '',
-          'Please check your wifi connection with the lavazza caffè machine',
-          [{text: 'ok'}],
-        );
-        console.log(e);
-        this.setState({isLoading: false});
+    this.setState({
+      isLoading: true,
+    });
+    var clientList = await getMachineList();
+    console.log(clientList);
+    this.setState({isLoading: false});
+    if (clientList === [] || clientList === undefined || clientList === null) {
+      Alert.alert('', 'Something went wrong', [{text: 'Ok'}]);
+    } else {
+      console.log(clientList);
+      this.props.navigation.navigate('machineListScreen', {
+        clientList: clientList,
       });
+    }
   };
 
   render() {
@@ -170,9 +150,7 @@ export default class ConnectScreen extends Component {
           {this.state.isLoading ? (
             <View style={styles.loadingActivityContainer}>
               <ActivityIndicator size="small" color="#100A45" />
-              <Text style={styles.loadingActivityTextStyle}>
-                Connecting...!
-              </Text>
+              <Text style={styles.loadingActivityTextStyle}>Connecting</Text>
             </View>
           ) : (
             <View style={styles.connectButtonContainer}>

@@ -45,7 +45,7 @@ import {
   TOKEN,
   SUCCESS,
 } from './macros';
-import getTimeoutSignal from './commonApis';
+import {getTimeoutSignal} from './commonApis';
 import ProgressiveImage from './progressiveImage';
 
 MaterialCommunityIcons.loadFont();
@@ -526,6 +526,7 @@ export default class DispenseScreen extends Component {
             return (
               <TouchableOpacity
                 key={index}
+                style={{paddingHorizontal:8,}}
                 onPress={() => {
                   this.setState({
                     modalVisible: !this.state.modalVisible,
