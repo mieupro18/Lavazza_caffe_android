@@ -12,6 +12,7 @@ import {
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-community/async-storage';
 import BackgroundTimer from 'react-native-background-timer';
+import {Picker} from '@react-native-picker/picker';
 import {
   responsiveScreenHeight,
   responsiveScreenWidth,
@@ -24,24 +25,21 @@ import {
   TOKEN,
   SUCCESS,
 } from './macros';
-import {getTimeoutSignal, getMachineList} from './commonApis';
+import {getTimeoutSignal} from './commonApis';
 
 var retry_attempt = 0;
 const max_retry_attempt = 6;
-var PI_SERVER_ENDPOINT = null;
 
 export default class ConnectScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
+      modeNumber: 0,
     };
   }
 
   async componentDidMount() {
-    /*PI_SERVER_ENDPOINT =
-      'http://' + this.props.route.params.ipAddress + ':9876';
-    console.log(PI_SERVER_ENDPOINT);*/
     AppState.addEventListener('change', this.handleAppStateChange);
   }
 
@@ -113,20 +111,56 @@ export default class ConnectScreen extends Component {
     }
   };
 
-  onConnect = async () => {
-    this.setState({
-      isLoading: true,
-    });
-    var clientList = await getMachineList();
-    console.log(clientList);
-    this.setState({isLoading: false});
-    if (clientList === [] || clientList === undefined || clientList === null) {
-      Alert.alert('', 'Something went wrong', [{text: 'Ok'}]);
-    } else {
-      console.log(clientList);
-      this.props.navigation.navigate('machineListScreen', {
-        clientList: clientList,
+  getProductList = async ipAddress => {
+    //this.setState({isLoading: true});
+    const PI_SERVER_ENDPOINT = 'http://' + ipAddress + ':9876';
+    console.log('get Product Info', PI_SERVER_ENDPOINT, TOKEN);
+    fetch(PI_SERVER_ENDPOINT + '/productInfo', {
+      headers: {
+        tokenId: TOKEN,
+      },
+      signal: (await getTimeoutSignal(5000)).signal,
+    })
+      .then(response => response.json())
+      .then(async resultData => {
+        console.log(resultData);
+        if (resultData.status === SUCCESS) {
+          this.props.navigation.navigate('dispenseScreen', {
+            productList: resultData.data,
+            machineName: resultData.machineName,
+            machineId: resultData.machineId,
+            PI_SERVER_ENDPOINT: PI_SERVER_ENDPOINT,
+          });
+        } else {
+          Alert.alert('', 'Something Went Wrong...Please reconnect', [
+            {text: 'Ok'},
+          ]);
+        }
+        this.setState({isLoading: false});
+      })
+      .catch(async e => {
+        Alert.alert(
+          '',
+          'Please check your wifi connection with the lavazza caffè machine',
+          [{text: 'ok'}],
+        );
+        console.log(e);
+        this.setState({isLoading: false});
       });
+  };
+
+  onConnect = async () => {
+    console.log(this.state);
+    if (this.state.modeNumber === 0) {
+      Alert.alert('', 'Please Select Mode', [{text: 'ok'}]);
+      this.setState({isLoading: false});
+    } else if (this.state.modeNumber === 1) {
+      setTimeout(async () => {
+        this.props.navigation.navigate('machineListScreen');
+        this.setState({isLoading: false});
+      }, 500);
+    } else if (this.state.modeNumber === 2) {
+      await this.getProductList('192.168.5.1');
     }
   };
 
@@ -140,28 +174,57 @@ export default class ConnectScreen extends Component {
               source={require('../assets/lavazza_logo_with_year.png')}
             />
           </View>
+          
 
-          <View style={styles.gifContainer}>
-            <Image
-              style={styles.gif}
-              source={require('../assets/connect.gif')}
-            />
-          </View>
           {this.state.isLoading ? (
-            <View style={styles.loadingActivityContainer}>
-              <ActivityIndicator size="small" color="#100A45" />
-              <Text style={styles.loadingActivityTextStyle}>Connecting</Text>
+            <View style={{alignItems:'center'}}>
+              <View style={styles.gifContainer}>
+                <Image
+                  style={styles.gif}
+                  source={require('../assets/connect.gif')}
+                />
+              </View>
+              <View style={styles.loadingActivityContainer}>
+                <ActivityIndicator size="small" color="#100A45" />
+                <Text style={styles.loadingActivityTextStyle}>Connecting</Text>
+              </View>
             </View>
           ) : (
-            <View style={styles.connectButtonContainer}>
-              <TouchableHighlight
-                underlayColor="#100A45"
-                style={styles.connectButtonStyle}
-                onPress={() => {
-                  this.onConnect();
-                }}>
-                <Text style={styles.connectButtonTextStyle}>Connect</Text>
-              </TouchableHighlight>
+            <View style>
+              <Text style={{fontSize: 15,alignSelf:'center'}}>Enjoy Your Coffee</Text>
+              <Text style={{marginTop:10, fontSize: 15}}>Mode</Text>
+              <View style={styles.pickerContainer}>
+                <Picker
+                  selectedValue={this.state.modeNumber}
+                  //mode="dropdown"
+                  style={styles.pickerStyle}
+                  onValueChange={(itemValue, itemIndex) =>
+                    this.setState({modeNumber: itemValue})
+                  }>
+                  <Picker.Item
+                    label="--- Select Mode ---"
+                    value={0}
+                    color="#grey"
+                  />
+                  <Picker.Item
+                    label="Organization Wi-Fi"
+                    value={1}
+                    color="#000"
+                  />
+                  <Picker.Item label="Machine Wi-Fi" value={2} color="#000" />
+                </Picker>
+              </View>
+              <View style={styles.connectButtonContainer}>
+                <TouchableHighlight
+                  underlayColor="#100A45"
+                  style={styles.connectButtonStyle}
+                  onPress={() => {
+                    this.setState({isLoading: true});
+                    this.onConnect();
+                  }}>
+                  <Text style={styles.connectButtonTextStyle}>Connect</Text>
+                </TouchableHighlight>
+              </View>
             </View>
           )}
         </View>
@@ -195,6 +258,17 @@ const styles = StyleSheet.create({
   gif: {
     width: responsiveScreenWidth(50),
     height: responsiveScreenWidth(50),
+  },
+  pickerContainer: {
+    alignItems: 'center',
+  },
+  pickerStyle: {
+    marginTop: 10,
+    height: 35,
+    width: 200,
+    alignItems: 'center',
+    //color: '#100A45',
+    backgroundColor: '#EBEBEB',
   },
   loadingActivityContainer: {
     flexDirection: 'row',

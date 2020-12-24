@@ -1,17 +1,6 @@
 import React, {Component} from 'react';
-import {
-  StyleSheet,
-  View,
-  Modal,
-  ActivityIndicator,
-  Text,
-  Image,
-} from 'react-native';
-import {
-  responsiveScreenHeight,
-  responsiveScreenWidth,
-  responsiveScreenFontSize,
-} from 'react-native-responsive-dimensions';
+import {StyleSheet, View, Modal, Text, Image} from 'react-native';
+import {responsiveScreenWidth} from 'react-native-responsive-dimensions';
 class Loader extends Component {
   constructor(props) {
     super(props);
@@ -24,7 +13,7 @@ class Loader extends Component {
         transparent={true}
         animationType={'none'}
         visible={this.props.loading}
-        style={{zIndex: 1100}}
+        style={styles.modalStyle}
         onRequestClose={() => {}}>
         <View style={styles.modalBackground}>
           <View style={styles.activityIndicatorWrapper}>
@@ -32,8 +21,7 @@ class Loader extends Component {
               style={styles.gif}
               source={require('../assets/cup_loading.gif')}
             />
-            <Text style={{color: 'gray',fontWeight:'bold'}}>Loading...</Text>
-            {/*<ActivityIndicator animating={this.props.loading} color="#100A45" />*/}
+            <Text style={styles.loadingTextStyle}>Loading...</Text>
           </View>
         </View>
       </Modal>
@@ -42,6 +30,9 @@ class Loader extends Component {
 }
 
 const styles = StyleSheet.create({
+  modalStyle: {
+    zIndex: 1100,
+  },
   modalBackground: {
     flex: 1,
     alignItems: 'center',
@@ -62,6 +53,10 @@ const styles = StyleSheet.create({
   gif: {
     width: responsiveScreenWidth(20),
     height: responsiveScreenWidth(20),
+  },
+  loadingTextStyle: {
+    color: 'gray',
+    fontWeight: 'bold',
   },
 });
 

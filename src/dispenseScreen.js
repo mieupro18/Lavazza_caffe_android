@@ -526,7 +526,7 @@ export default class DispenseScreen extends Component {
             return (
               <TouchableOpacity
                 key={index}
-                style={{paddingHorizontal:8,}}
+                style={styles.touchableOpacityStyle}
                 onPress={() => {
                   this.setState({
                     modalVisible: !this.state.modalVisible,
@@ -816,6 +816,9 @@ const styles = StyleSheet.create({
     width: responsiveScreenWidth(50),
     height: responsiveScreenHeight(5),
     resizeMode: 'contain',
+  },
+  touchableOpacityStyle: {
+    paddingHorizontal: 8,
   },
   cardContainer: {
     flexDirection: 'row',

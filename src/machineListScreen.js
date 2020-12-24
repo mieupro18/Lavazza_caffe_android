@@ -2,7 +2,6 @@ import React, {Component} from 'react';
 import {
   StyleSheet,
   SafeAreaView,
-  FlatList,
   Image,
   View,
   Alert,
@@ -18,21 +17,25 @@ import {
 import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import {Card, CardItem} from 'native-base';
 import {ScrollView} from 'react-native-gesture-handler';
-//var clientList = [];
-import {SUCCESS, FAILURE, TOKEN} from './macros';
+import {SUCCESS, TOKEN} from './macros';
 import {getTimeoutSignal, getMachineList} from './commonApis';
 import Loader from './loader';
+import NetInfo from '@react-native-community/netinfo';
 
 export default class MachineListScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
-      isLoading: false,
-      clientList: this.props.route.params.clientList,
+      isLoading: true,
+      clientList: [],
+      initialMount: true,
+      errorMessage: null,
     };
   }
 
-  async componentDidMount() {}
+  async componentDidMount() {
+    await this.getDevices();
+  }
 
   async componentWillUnmount() {}
 
@@ -74,30 +77,49 @@ export default class MachineListScreen extends Component {
       });
   };
 
-  renderSeparator = () => {
-    return <View style={styles.renderSeparator} />;
-  };
-  //handling onPress action
-  getListViewItem = async item => {
-    //Alert.alert(item.key);
+  onDeviceClick = async item => {
     await this.getProductList(item.ipAddress);
   };
-  onRefresh = async () => {
+
+  getDevices = async () => {
     this.setState({isLoading: true});
-    var clientList = await getMachineList();
-    this.setState({isLoading: false});
-    if (clientList === [] || clientList === undefined || clientList === null) {
-      Alert.alert('', 'Something went wrong', [{text: 'Ok'}]);
-    } else {
-      console.log(clientList);
-      this.setState({
-        clientList: clientList,
-      });
-    }
+    await NetInfo.fetch().then(async state => {
+      console.log('Connection type', state.type);
+      console.log('Is connected?', state.isConnected);
+      console.log('Details', state.details);
+      if (state.type === 'wifi' && state.isConnected === true) {
+        var clientList = await getMachineList(
+          state.details.ipAddress,
+          state.details.subnet,
+        );
+        this.setState({isLoading: false});
+        //console.log("ndunb",clientList)
+        if (
+          clientList.length === 0 ||
+          clientList === undefined ||
+          clientList === null
+        ) {
+          //console.log("jbcj")
+          this.setState({
+            errorMessage: 'No Devices Found\nSomething went wrong',
+          });
+        } else {
+          //console.log(clientList);
+          this.setState({
+            clientList: clientList,
+          });
+        }
+      } else {
+        this.setState({errorMessage: 'Please Connect to the Wi-Fi'});
+        this.setState({isLoading: false});
+      }
+      if (this.state.initialMount === true) {
+        this.setState({initialMount: false});
+      }
+    });
   };
 
   render() {
-    //this.setState({clientList: clientList});
     return (
       <SafeAreaView style={styles.mainContainer}>
         <Loader loading={this.state.isLoading} />
@@ -109,49 +131,35 @@ export default class MachineListScreen extends Component {
           />
           <MaterialCommunityIcons
             name="reload"
-            onPress={() => this.onRefresh()}
+            onPress={() => this.getDevices()}
             size={responsiveScreenHeight(4)}
             style={styles.refreshIconStyle}
           />
         </View>
-        <ScrollView
-          keyboardShouldPersistTaps="handled"
-          refreshControl={
-            <RefreshControl
-              refreshing={false}
-              onRefresh={() => {
-                this.onRefresh();
-              }}
-            />
-          }>
-          {this.state.clientList.length === 0 ? (
-            <Text style={styles.textStyle}>No Machines Found</Text>
+        <ScrollView>
+          {this.state.clientList.length === 0 &&
+          this.state.initialMount === false ? (
+            <Text style={styles.textStyle}>{this.state.errorMessage}</Text>
           ) : null}
           {this.state.clientList.map((item, index) => {
             return (
               <TouchableOpacity
                 key={index}
-                style={{paddingHorizontal:8,}}
-                onPress={this.getListViewItem.bind(this, item)}>
+                style={styles.touchableOpacityStyle}
+                onPress={this.onDeviceClick.bind(this, item)}>
                 <Card>
                   <CardItem>
                     <View style={styles.cardContainer}>
-                      {/*<View>
-                      <Image
-                        style={styles.productImageStyleInCard}
-                        source={}
-                      />
-                    </View>*/}
-                      <View style={styles.productNameContainerInCard}>
-                        <Text style={styles.productNameTextStyle}>
+                      <View style={styles.deviceNameContainerInCard}>
+                        <Text style={styles.deviceNameTextStyle}>
                           {item.id}
                         </Text>
                       </View>
-                      <View style={styles.plusIconContainerInCard}>
+                      <View style={styles.arrowIconContainerInCard}>
                         <MaterialCommunityIcons
                           name="chevron-right"
                           size={responsiveScreenHeight(4)}
-                          style={styles.plusIconStyleInCard}
+                          style={styles.arrowIconStyleInCard}
                         />
                       </View>
                     </View>
@@ -161,23 +169,12 @@ export default class MachineListScreen extends Component {
             );
           })}
         </ScrollView>
-        {/*ItemSeparatorComponent={this.renderSeparator}
-                />*/}
       </SafeAreaView>
     );
   }
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  item: {
-    padding: 10,
-    fontSize: 20,
-    height: 44,
-    marginLeft: 20,
-  },
   mainContainer: {
     flex: 1,
   },
@@ -212,31 +209,29 @@ const styles = StyleSheet.create({
     width: responsiveScreenWidth(10),
     color: '#fff',
   },
+  touchableOpacityStyle: {
+    paddingHorizontal: 8,
+  },
   cardContainer: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     width: responsiveScreenWidth(100),
   },
-  productImageStyleInCard: {
-    width: responsiveScreenWidth(18),
-    height: responsiveScreenWidth(18),
-    borderRadius: responsiveScreenWidth(5),
-  },
-  productNameContainerInCard: {
+  deviceNameContainerInCard: {
     justifyContent: 'center',
     width: responsiveScreenWidth(80),
   },
-  productNameTextStyle: {
+  deviceNameTextStyle: {
     textShadowColor: '#100A45',
     fontSize: responsiveScreenFontSize(1.8),
     fontWeight: 'bold',
     color: '#100A45',
   },
-  plusIconContainerInCard: {
+  arrowIconContainerInCard: {
     justifyContent: 'center',
     width: responsiveScreenWidth(20),
   },
-  plusIconStyleInCard: {
+  arrowIconStyleInCard: {
     color: '#000',
   },
 });
