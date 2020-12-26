@@ -21,6 +21,7 @@
     "metro-react-native-babel-transformer": "0.60.0",
     "native-base": "^2.13.12",
     "opencollective-postinstall": "^2.0.2",
+    "radio-buttons-react-native": "1.0.4",
     "react": "16.11.0",
     "react-native": "0.62.2",
     "react-native-background-timer": "2.2.0",

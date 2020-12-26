@@ -122,7 +122,7 @@ export default class MachineListScreen extends Component {
   render() {
     return (
       <SafeAreaView style={styles.mainContainer}>
-        <Loader loading={this.state.isLoading} />
+        <Loader loading={this.state.isLoading} text='Searching...' />
         <View style={styles.headerContainer}>
           <View style={styles.emptyStyle} />
           <Image

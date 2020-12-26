@@ -17,11 +17,13 @@ class Loader extends Component {
         onRequestClose={() => {}}>
         <View style={styles.modalBackground}>
           <View style={styles.activityIndicatorWrapper}>
-            <Image
-              style={styles.gif}
-              source={require('../assets/cup_loading.gif')}
-            />
-            <Text style={styles.loadingTextStyle}>Loading...</Text>
+            <View style={styles.gifContainer}>
+              <Image
+                style={styles.gif}
+                source={require('../assets/connect.gif')}
+              />
+            </View>
+            <Text style={styles.loadingTextStyle}>{this.props.text}</Text>
           </View>
         </View>
       </Modal>
@@ -50,9 +52,14 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-around',
   },
+  gifContainer: {
+    borderRadius: responsiveScreenWidth(10),
+    overflow: 'hidden',
+  },
   gif: {
     width: responsiveScreenWidth(20),
     height: responsiveScreenWidth(20),
+    //borderRadius: responsiveScreenWidth(10)
   },
   loadingTextStyle: {
     color: 'gray',

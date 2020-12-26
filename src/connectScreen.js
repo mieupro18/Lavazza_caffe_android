@@ -12,7 +12,9 @@ import {
 import NetInfo from '@react-native-community/netinfo';
 import AsyncStorage from '@react-native-community/async-storage';
 import BackgroundTimer from 'react-native-background-timer';
-import {Picker} from '@react-native-picker/picker';
+import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
+//import {Picker} from '@react-native-picker/picker';
+import RadioButtonRN from 'radio-buttons-react-native';
 import {
   responsiveScreenHeight,
   responsiveScreenWidth,
@@ -26,16 +28,30 @@ import {
   SUCCESS,
 } from './macros';
 import {getTimeoutSignal} from './commonApis';
+import Loader from './loader';
 
 var retry_attempt = 0;
 const max_retry_attempt = 6;
+//const wifiModes = ['Organization', 'Machine'];
+const orgWifi = '  Organization';
+const machineWifi = '  Machine';
+const wifiModes = [
+  {
+    label: orgWifi,
+  },
+  {
+    label: machineWifi,
+  },
+];
 
 export default class ConnectScreen extends Component {
   constructor(props) {
     super(props);
     this.state = {
       isLoading: false,
-      modeNumber: 0,
+      mode: null,
+      modeNumber: -1,
+      hideConnectButton: false,
     };
   }
 
@@ -137,6 +153,7 @@ export default class ConnectScreen extends Component {
           ]);
         }
         this.setState({isLoading: false});
+        //this.setState({hideConnectButton: false});
       })
       .catch(async e => {
         Alert.alert(
@@ -146,20 +163,23 @@ export default class ConnectScreen extends Component {
         );
         console.log(e);
         this.setState({isLoading: false});
+        //this.setState({hideConnectButton: false});
       });
   };
 
   onConnect = async () => {
     console.log(this.state);
-    if (this.state.modeNumber === 0) {
+    if (this.state.mode === null) {
       Alert.alert('', 'Please Select Mode', [{text: 'ok'}]);
-      this.setState({isLoading: false});
-    } else if (this.state.modeNumber === 1) {
+    } else if (this.state.mode === orgWifi) {
+      this.setState({hideConnectButton: true});
+      await this.props.navigation.navigate('machineListScreen');
       setTimeout(async () => {
-        this.props.navigation.navigate('machineListScreen');
-        this.setState({isLoading: false});
-      }, 500);
-    } else if (this.state.modeNumber === 2) {
+        //this.setState({hideConnectButton: true});
+        this.setState({hideConnectButton: false});
+      }, 1000);
+    } else if (this.state.mode === machineWifi) {
+      this.setState({isLoading: true});
       await this.getProductList('192.168.5.1');
     }
   };
@@ -167,6 +187,7 @@ export default class ConnectScreen extends Component {
   render() {
     return (
       <View style={styles.mainContainer}>
+        <Loader loading={this.state.isLoading} text="Connecting..." />
         <View style={styles.centeredViewContainer}>
           <View style={styles.logoContainer}>
             <Image
@@ -174,10 +195,9 @@ export default class ConnectScreen extends Component {
               source={require('../assets/lavazza_logo_with_year.png')}
             />
           </View>
-          
 
-          {this.state.isLoading ? (
-            <View style={{alignItems:'center'}}>
+          {/*this.state.isLoading ? (
+            <View style={{alignItems: 'center'}}>
               <View style={styles.gifContainer}>
                 <Image
                   style={styles.gif}
@@ -189,44 +209,67 @@ export default class ConnectScreen extends Component {
                 <Text style={styles.loadingActivityTextStyle}>Connecting</Text>
               </View>
             </View>
-          ) : (
-            <View style>
-              <Text style={{fontSize: 15,alignSelf:'center'}}>Enjoy Your Coffee</Text>
-              <Text style={{marginTop:10, fontSize: 15}}>Mode</Text>
-              <View style={styles.pickerContainer}>
-                <Picker
-                  selectedValue={this.state.modeNumber}
-                  //mode="dropdown"
-                  style={styles.pickerStyle}
-                  onValueChange={(itemValue, itemIndex) =>
-                    this.setState({modeNumber: itemValue})
-                  }>
-                  <Picker.Item
-                    label="--- Select Mode ---"
-                    value={0}
-                    color="#grey"
-                  />
-                  <Picker.Item
-                    label="Organization Wi-Fi"
-                    value={1}
-                    color="#000"
-                  />
-                  <Picker.Item label="Machine Wi-Fi" value={2} color="#000" />
-                </Picker>
-              </View>
+          ) : (*/}
+          <View>
+            <View style={styles.textContainer}>
+              <Text style={styles.modeTextStyle}>Select Wi-Fi Mode</Text>
+              <MaterialCommunityIcons
+                name="information-variant"
+                onPress={() => {
+                  Alert.alert(
+                    'Mode Info',
+                    orgWifi +
+                      '\n     This is organization wifi mode \n\n' +
+                      machineWifi +
+                      '\n     This is machine wifi mode',
+                    [{text: 'ok'}],
+                  );
+                }}
+                size={responsiveScreenHeight(3)}
+                style={styles.infoIconStyleInCard}
+              />
+            </View>
+
+            <RadioButtonRN
+              data={wifiModes}
+              style={{marginTop: 10}}
+              textStyle={{fontSize: responsiveScreenFontSize(2)}}
+              // animationTypes={['shake']}
+              initial={this.state.modeNumber}
+              //activeColor='#100A45'
+              selectedBtn={e => {
+                this.setState({mode: e.label});
+                if (e.label === orgWifi) {
+                  this.setState({modeNumber: 1});
+                } else if (e.label === machineWifi) {
+                  this.setState({modeNumber: 2});
+                } else {
+                  this.setState({modeNumber: -1});
+                }
+              }}
+              box={false}
+              //circleSize={15}
+              icon={
+                <MaterialCommunityIcons
+                  name="circle-slice-8"
+                  size={25}
+                  color="#100A45"
+                />
+              }
+            />
+            {!this.state.hideConnectButton ? (
               <View style={styles.connectButtonContainer}>
                 <TouchableHighlight
                   underlayColor="#100A45"
                   style={styles.connectButtonStyle}
                   onPress={() => {
-                    this.setState({isLoading: true});
                     this.onConnect();
                   }}>
                   <Text style={styles.connectButtonTextStyle}>Connect</Text>
                 </TouchableHighlight>
               </View>
-            </View>
-          )}
+            ) : null}
+          </View>
         </View>
       </View>
     );
@@ -251,6 +294,29 @@ const styles = StyleSheet.create({
     height: '100%',
     resizeMode: 'contain',
   },
+  textContainer: {
+    //flex:1,
+    alignContent: 'flex-start',
+    //marginTop: 20,
+    //alignContent:'flex-start',
+    flexDirection: 'row',
+    //alignItems:'center'
+    //justifyContent:'space-between',
+  },
+  modeTextStyle: {
+    //paddingLeft: 45,
+    //justifyContent:'center',
+    //alignSelf: 'center',
+    fontSize: responsiveScreenFontSize(2),
+    color: '#000000',
+    fontWeight: 'normal',
+  },
+  infoIconStyleInCard: {
+    alignSelf: 'center',
+    justifyContent: 'center',
+    paddingLeft: responsiveScreenWidth(1),
+    color: '#100A45',
+  },
   gifContainer: {
     borderRadius: responsiveScreenWidth(25),
     overflow: 'hidden',
@@ -261,14 +327,18 @@ const styles = StyleSheet.create({
   },
   pickerContainer: {
     alignItems: 'center',
+    marginTop: 5,
   },
   pickerStyle: {
     marginTop: 10,
     height: 35,
     width: 200,
     alignItems: 'center',
+    color: '#747474',
     //color: '#100A45',
-    backgroundColor: '#EBEBEB',
+    //backgroundColor: 'transparent',
+    //textAlign:'center',
+    borderColor: '#EBEBEB',
   },
   loadingActivityContainer: {
     flexDirection: 'row',
