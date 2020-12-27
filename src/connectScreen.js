@@ -33,8 +33,8 @@ import Loader from './loader';
 var retry_attempt = 0;
 const max_retry_attempt = 6;
 //const wifiModes = ['Organization', 'Machine'];
-const orgWifi = '  Organization';
-const machineWifi = '  Machine';
+const orgWifi = 'Organization';
+const machineWifi = 'Machine';
 const wifiModes = [
   {
     label: orgWifi,
@@ -189,14 +189,15 @@ export default class ConnectScreen extends Component {
       <View style={styles.mainContainer}>
         <Loader loading={this.state.isLoading} text="Connecting..." />
         <View style={styles.centeredViewContainer}>
-          <View style={styles.logoContainer}>
-            <Image
-              style={styles.logo}
-              source={require('../assets/lavazza_logo_with_year.png')}
-            />
-          </View>
+          <View style={styles.modalView}>
+            <View style={styles.logoContainer}>
+              <Image
+                style={styles.logo}
+                source={require('../assets/lavazza_logo_with_year.png')}
+              />
+            </View>
 
-          {/*this.state.isLoading ? (
+            {/*this.state.isLoading ? (
             <View style={{alignItems: 'center'}}>
               <View style={styles.gifContainer}>
                 <Image
@@ -210,65 +211,70 @@ export default class ConnectScreen extends Component {
               </View>
             </View>
           ) : (*/}
-          <View>
-            <View style={styles.textContainer}>
-              <Text style={styles.modeTextStyle}>Select Wi-Fi Mode</Text>
-              <MaterialCommunityIcons
-                name="information-variant"
-                onPress={() => {
-                  Alert.alert(
-                    'Mode Info',
-                    orgWifi +
-                      '\n     This is organization wifi mode \n\n' +
-                      machineWifi +
-                      '\n     This is machine wifi mode',
-                    [{text: 'ok'}],
-                  );
-                }}
-                size={responsiveScreenHeight(3)}
-                style={styles.infoIconStyleInCard}
-              />
-            </View>
-
-            <RadioButtonRN
-              data={wifiModes}
-              style={{marginTop: 10}}
-              textStyle={{fontSize: responsiveScreenFontSize(2)}}
-              // animationTypes={['shake']}
-              initial={this.state.modeNumber}
-              //activeColor='#100A45'
-              selectedBtn={e => {
-                this.setState({mode: e.label});
-                if (e.label === orgWifi) {
-                  this.setState({modeNumber: 1});
-                } else if (e.label === machineWifi) {
-                  this.setState({modeNumber: 2});
-                } else {
-                  this.setState({modeNumber: -1});
-                }
-              }}
-              box={false}
-              //circleSize={15}
-              icon={
+            <View>
+              <View style={styles.textContainer}>
+                <Text style={styles.modeTextStyle}>Select Wi-Fi Mode</Text>
                 <MaterialCommunityIcons
-                  name="circle-slice-8"
-                  size={25}
-                  color="#100A45"
-                />
-              }
-            />
-            {!this.state.hideConnectButton ? (
-              <View style={styles.connectButtonContainer}>
-                <TouchableHighlight
-                  underlayColor="#100A45"
-                  style={styles.connectButtonStyle}
+                  name="information-outline"
                   onPress={() => {
-                    this.onConnect();
-                  }}>
-                  <Text style={styles.connectButtonTextStyle}>Connect</Text>
-                </TouchableHighlight>
+                    Alert.alert(
+                      'Mode Info',
+                      orgWifi +
+                        '\n     This is organization wifi mode \n\n' +
+                        machineWifi +
+                        '\n     This is machine wifi mode',
+                      [{text: 'ok'}],
+                    );
+                  }}
+                  size={responsiveScreenHeight(2.2)}
+                  style={styles.infoIconStyleInCard}
+                />
               </View>
-            ) : null}
+
+              <RadioButtonRN
+                data={wifiModes}
+                style={{marginTop: 10, marginLeft: 0}}
+                textStyle={{fontSize: responsiveScreenFontSize(2)}}
+                // animationTypes={['shake']}
+                initial={this.state.modeNumber}
+                //activeColor='#100A45'
+                selectedBtn={e => {
+                  this.setState({mode: e.label});
+                  if (e.label === orgWifi) {
+                    this.setState({modeNumber: 1});
+                  } else if (e.label === machineWifi) {
+                    this.setState({modeNumber: 2});
+                  } else {
+                    this.setState({modeNumber: -1});
+                  }
+                }}
+                box={true}
+                //boxStyle={{borderColor:'#100A45'}}
+                activeColor='#e2e2e2'
+                boxActiveBgColor='#fff'
+                //textColor='#'
+                //circleSize={15}
+                icon={
+                  <MaterialCommunityIcons
+                    name="radiobox-marked"
+                    size={25}
+                    color="#100A45"
+                  />
+                }
+              />
+              {!this.state.hideConnectButton ? (
+                <View style={styles.connectButtonContainer}>
+                  <TouchableHighlight
+                    underlayColor="#100A45"
+                    style={styles.connectButtonStyle}
+                    onPress={() => {
+                      this.onConnect();
+                    }}>
+                    <Text style={styles.connectButtonTextStyle}>Connect</Text>
+                  </TouchableHighlight>
+                </View>
+              ) : null}
+            </View>
           </View>
         </View>
       </View>
@@ -284,7 +290,21 @@ const styles = StyleSheet.create({
   centeredViewContainer: {
     flex: 1,
     justifyContent: 'center',
-    alignItems: 'center',
+    //alignItems: 'center',
+    //borderRadius:20,
+    //borderColor: '#100A45',
+    //borderWidth: 10,
+  },
+  modalView: {
+    margin: '10%',
+    backgroundColor: 'white',
+    borderRadius: responsiveScreenWidth(5),
+    borderColor: '#100A45',
+    borderWidth: responsiveScreenWidth(0.5),
+    paddingLeft: responsiveScreenWidth(5),
+    paddingRight: responsiveScreenWidth(5),
+    paddingBottom: responsiveScreenWidth(5),
+    paddingTop: responsiveScreenWidth(2),
   },
   logoContainer: {
     height: responsiveScreenHeight(13),
@@ -296,20 +316,20 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     //flex:1,
-    alignContent: 'flex-start',
-    //marginTop: 20,
+    //alignContent: 'flex-start',
+    //marginLeft: 20,
     //alignContent:'flex-start',
     flexDirection: 'row',
-    //alignItems:'center'
+    alignSelf:'center'
     //justifyContent:'space-between',
   },
   modeTextStyle: {
     //paddingLeft: 45,
     //justifyContent:'center',
     //alignSelf: 'center',
-    fontSize: responsiveScreenFontSize(2),
+    fontSize: responsiveScreenFontSize(1.8),
     color: '#000000',
-    fontWeight: 'normal',
+    //fontWeight: 'bold',
   },
   infoIconStyleInCard: {
     alignSelf: 'center',
@@ -351,7 +371,7 @@ const styles = StyleSheet.create({
   },
   connectButtonContainer: {
     alignItems: 'center',
-    marginTop: '5%',
+    marginTop: responsiveScreenHeight(5),
   },
   connectButtonStyle: {
     width: responsiveScreenWidth(30),
