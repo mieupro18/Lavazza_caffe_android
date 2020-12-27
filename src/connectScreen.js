@@ -250,7 +250,7 @@ export default class ConnectScreen extends Component {
                 }}
                 box={true}
                 //boxStyle={{borderColor:'#100A45'}}
-                activeColor='#e2e2e2'
+                activeColor='#100A45'
                 boxActiveBgColor='#fff'
                 //textColor='#'
                 //circleSize={15}
@@ -299,7 +299,7 @@ const styles = StyleSheet.create({
     margin: '10%',
     backgroundColor: 'white',
     borderRadius: responsiveScreenWidth(5),
-    borderColor: '#100A45',
+    borderColor: '#e2e2e2',
     borderWidth: responsiveScreenWidth(0.5),
     paddingLeft: responsiveScreenWidth(5),
     paddingRight: responsiveScreenWidth(5),
